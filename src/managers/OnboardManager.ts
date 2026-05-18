@@ -31,24 +31,28 @@ export class OnboardManager {
       console.log('OnboardManager: Starting onboarding conversation...');
       this.status = VoiceStatus.CONNECTING;
       
-      // Simulate realistic onboarding conversation
+      // Realistic onboarding like Pep video
       setTimeout(() => {
         this.status = VoiceStatus.CONNECTED;
-        this.messages.push('Welcome to Flexo! 🎉');
+        this.messages.push('Good to see you! I\'m Flexo 🐕');
         console.log('OnboardManager: Onboarding conversation started');
       }, 1500);
 
       setTimeout(() => {
         this.messages.push('I\'m your compassionate Physical Therapy companion.');
-      }, 3000);
+      }, 3500);
 
       setTimeout(() => {
-        this.messages.push('I\'ll help you stay motivated and track your progress.');
-      }, 4500);
+        this.messages.push('I\'m here to help you stay motivated and track your progress.');
+      }, 5500);
 
       setTimeout(() => {
         this.messages.push('What\'s your name?');
-      }, 6000);
+      }, 7500);
+
+      setTimeout(() => {
+        this.messages.push('Great to meet you! What body part are we focusing on?');
+      }, 10000);
       
     } catch (error) {
       console.error('OnboardManager: Error starting onboarding:', error);

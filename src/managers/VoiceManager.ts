@@ -37,21 +37,24 @@ export class VoiceManager {
       console.log('VoiceManager: Starting conversation...');
       this.status = VoiceStatus.CONNECTING;
       
-      // Simulate realistic conversation flow
+      // Realistic conversation flow like Pep
       setTimeout(() => {
         this.status = VoiceStatus.CONNECTED;
-        this.messages.push('Welcome to Flexo! 🎉');
+        this.messages.push('Good to see you! I\'m Flexo 🐕');
         console.log('VoiceManager: Connected successfully');
       }, 1500);
 
-      // Add more messages over time to simulate conversation
       setTimeout(() => {
-        this.messages.push('I\'m here to help you with your physical therapy exercises.');
+        this.messages.push('I\'m here to help you with your physical therapy.');
       }, 3000);
 
       setTimeout(() => {
-        this.messages.push('How are you feeling today?');
-      }, 4500);
+        this.messages.push('What body part are we focusing on today?');
+      }, 5000);
+
+      setTimeout(() => {
+        this.messages.push('Great! Let\'s start with your hand exercises.');
+      }, 7000);
       
     } catch (error) {
       console.error('VoiceManager: Error starting conversation:', error);

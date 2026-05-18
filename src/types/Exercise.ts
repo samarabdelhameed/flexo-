@@ -43,3 +43,56 @@ export const EXERCISES: Exercise[] = [
     duration: 20,
   },
 ];
+
+// Exercise instructions (like Pep provides)
+export const EXERCISE_INSTRUCTIONS = {
+  [ExerciseType.FINGER_SPREADS]: {
+    setup: 'Position your hand in front of the camera with palm facing forward.',
+    execution: [
+      'Spread your fingers wide apart like a fan',
+      'Keep your fingers fully extended',
+      'Keep your wrist straight and relaxed',
+      'Hold for 5 seconds',
+      'Relax and repeat',
+    ],
+    tips: [
+      'Make sure your fingers are fully extended',
+      'Keep your wrist straight',
+      'Don\'t force the stretch if you feel pain',
+      'Breathe normally throughout',
+    ],
+    progression: 'If you\'re not feeling much pain, increase repetitions or hold time before moving to harder exercises.',
+  },
+  [ExerciseType.MOBILITY_TOUCHES]: {
+    setup: 'Hold your hand up with palm facing you.',
+    execution: [
+      'Touch your thumb to your index finger',
+      'Touch your thumb to your middle finger',
+      'Touch your thumb to your ring finger',
+      'Touch your thumb to your pinky',
+      'Repeat in reverse order',
+    ],
+    tips: [
+      'Move slowly and deliberately',
+      'Make full contact with each finger',
+      'Keep other fingers relaxed',
+    ],
+    progression: 'Increase speed while maintaining control.',
+  },
+  [ExerciseType.FIST_MAKING]: {
+    setup: 'Start with your hand open and relaxed.',
+    execution: [
+      'Slowly curl your fingers into your palm',
+      'Make a gentle fist',
+      'Hold for 3 seconds',
+      'Slowly open your hand',
+      'Repeat',
+    ],
+    tips: [
+      'Don\'t squeeze too hard',
+      'Keep your wrist neutral',
+      'Stop if you feel sharp pain',
+    ],
+    progression: 'Gradually increase the firmness of your grip.',
+  },
+};

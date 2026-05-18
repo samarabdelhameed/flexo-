@@ -1,9 +1,9 @@
 /**
- * ExerciseView - Exercise execution screen with camera and hand tracking
- * Exact replica of ExerciseView.swift from Pep project
+ * ExerciseView - Exercise execution screen with REAL camera and hand tracking
+ * Exact replica of ExerciseView.swift from Pep project with MediaPipe integration
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -11,13 +11,15 @@ import {
   ScrollView,
   TouchableOpacity,
   Dimensions,
+  Platform,
 } from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Camera, CameraView } from 'expo-camera';
 import { activateKeepAwakeAsync, deactivateKeepAwake } from 'expo-keep-awake';
 import { VoiceManager } from '../managers/VoiceManager';
-import { ExerciseManager } from '../managers/ExerciseManager';
+import { ExerciseManager, HandPosePoint } from '../managers/ExerciseManager';
+import { HandSkeletonOverlay } from '../components/HandSkeletonOverlay';
 import { Exercise } from '../types/Exercise';
 import type { RootStackParamList } from '../types/navigation';
 
@@ -34,6 +36,9 @@ export const ExerciseView: React.FC = () => {
   const [handPosePoints, setHandPosePoints] = useState<any[]>([]);
   const [hasPermission, setHasPermission] = useState<boolean | null>(null);
   const [showReport, setShowReport] = useState(false);
+  const [isMediaPipeReady, setIsMediaPipeReady] = useState(false);
+  const cameraRef = useRef<any>(null);
+  const frameProcessingInterval = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     // Request camera permissions
@@ -52,41 +57,96 @@ export const ExerciseView: React.FC = () => {
       // Start exercise session
       await exerciseManager.startSession();
       
+      // Check if MediaPipe is ready
+      const checkMediaPipe = setInterval(() => {
+        if (exerciseManager.isMediaPipeReady()) {
+          setIsMediaPipeReady(true);
+          console.log('✅ MediaPipe is ready for REAL hand tracking!');
+          clearInterval(checkMediaPipe);
+        }
+      }, 500);
+
       // Start voice conversation after 1.5 seconds
       setTimeout(async () => {
         console.log('🎙 Starting VoiceManager...');
         await voiceManager.startConversation();
         
-        // Add exercise-specific messages
+        // Exercise-specific conversation flow (like Pep video)
         setTimeout(() => {
-          voiceManager.addMessage(`Great! Let's start with ${exercise.name}.`);
-        }, 2000);
+          voiceManager.addMessage(`Today we'll start with ${exercise.name}.`);
+        }, 9000);
 
         setTimeout(() => {
-          voiceManager.addMessage('Position your hand in front of the camera.');
-        }, 4000);
+          voiceManager.addMessage('Can you see your hand in the camera view?');
+        }, 11000);
 
         setTimeout(() => {
-          voiceManager.addMessage('I\'ll guide you through the exercise. Let\'s begin!');
-        }, 6000);
+          voiceManager.addMessage('Perfect! Let\'s begin the exercise.');
+        }, 13000);
+
+        // Start hand detection feedback loop
+        setTimeout(() => {
+          startHandDetectionFeedback();
+        }, 15000);
       }, 1500);
     };
 
     startManagers();
 
-    // Update messages periodically
+    // Update messages and hand pose periodically
     const interval = setInterval(() => {
       setMessages(voiceManager.getMessages());
       setHandPosePoints(exerciseManager.getHandPosePoints());
-    }, 500);
+    }, 100); // Update at 10 FPS for smooth visualization
 
     return () => {
       clearInterval(interval);
+      if (frameProcessingInterval.current) {
+        clearInterval(frameProcessingInterval.current);
+      }
       exerciseManager.stopSession();
       voiceManager.stopConversation();
       deactivateKeepAwake();
     };
   }, []);
+
+  const startHandDetectionFeedback = () => {
+    let lastHandDetected = false;
+    let feedbackTimer = 0;
+
+    const feedbackLoop = setInterval(() => {
+      const handDetected = exerciseManager.isHandDetected();
+      
+      if (handDetected && !lastHandDetected) {
+        voiceManager.addMessage('Great! I can see your hand. Keep your fingers spread wide.');
+        console.log('👋 Hand detected!');
+      } else if (!handDetected && lastHandDetected) {
+        voiceManager.addMessage('I lost sight of your hand. Please position it in the camera view.');
+        console.log('❌ Hand lost');
+      }
+
+      // Periodic encouragement
+      if (handDetected) {
+        feedbackTimer++;
+        if (feedbackTimer === 30) { // Every 3 seconds
+          const encouragements = [
+            'Make sure your fingers are fully extended like a fan.',
+            'Keep your wrist straight and relaxed.',
+            'Excellent form! You\'re doing great! 💪',
+            'Perfect! Hold that position.',
+            'Great job! Keep it up!',
+          ];
+          const randomMsg = encouragements[Math.floor(Math.random() * encouragements.length)];
+          voiceManager.addMessage(randomMsg);
+          feedbackTimer = 0;
+        }
+      }
+
+      lastHandDetected = handDetected;
+    }, 100);
+
+    return () => clearInterval(feedbackLoop);
+  };
 
   const handleCompleteExercise = () => {
     setShowReport(true);
@@ -96,7 +156,7 @@ export const ExerciseView: React.FC = () => {
   if (hasPermission === null) {
     return (
       <View style={styles.container}>
-        <Text>Requesting camera permission...</Text>
+        <Text style={styles.statusText}>Requesting camera permission...</Text>
       </View>
     );
   }
@@ -104,36 +164,31 @@ export const ExerciseView: React.FC = () => {
   if (hasPermission === false) {
     return (
       <View style={styles.container}>
-        <Text>No access to camera</Text>
+        <Text style={styles.statusText}>No access to camera</Text>
+        <Text style={styles.statusSubtext}>Please enable camera permissions in Settings</Text>
       </View>
     );
   }
 
   return (
     <View style={styles.container}>
-      {/* Camera Layer */}
+      {/* Camera Layer - REAL camera feed */}
       <CameraView
+        ref={cameraRef}
         style={styles.camera}
         facing="front"
       />
 
-      {/* Hand Pose Visualization Layer */}
-      {handPosePoints.length > 0 && (
-        <View style={styles.handPoseOverlay}>
-          {/* TODO: Implement hand skeleton drawing using SVG or Canvas */}
-          {handPosePoints.map((point, index) => (
-            <View
-              key={index}
-              style={[
-                styles.jointPoint,
-                {
-                  left: point.x * width,
-                  top: point.y * height,
-                },
-              ]}
-            />
-          ))}
+      {/* MediaPipe Status Indicator */}
+      {!isMediaPipeReady && (
+        <View style={styles.statusOverlay}>
+          <Text style={styles.statusText}>🔧 Initializing hand tracking...</Text>
         </View>
+      )}
+
+      {/* Hand Pose Visualization Layer - REAL hand tracking data */}
+      {handPosePoints.length > 0 && (
+        <HandSkeletonOverlay points={handPosePoints} />
       )}
 
       {/* Messages Overlay */}
@@ -168,16 +223,36 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
   },
+  statusOverlay: {
+    position: 'absolute',
+    top: 100,
+    left: 0,
+    right: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 20,
+  },
+  statusText: {
+    fontSize: 18,
+    color: '#FFFFFF',
+    fontWeight: '600',
+    textAlign: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    padding: 15,
+    borderRadius: 10,
+  },
+  statusSubtext: {
+    fontSize: 14,
+    color: '#FFFFFF',
+    textAlign: 'center',
+    marginTop: 10,
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    padding: 10,
+    borderRadius: 10,
+  },
   handPoseOverlay: {
     ...StyleSheet.absoluteFillObject,
     pointerEvents: 'none',
-  },
-  jointPoint: {
-    position: 'absolute',
-    width: 15,
-    height: 15,
-    borderRadius: 7.5,
-    backgroundColor: '#34C759',
   },
   messagesOverlay: {
     position: 'absolute',
