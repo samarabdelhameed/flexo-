@@ -14,7 +14,6 @@ import {
 } from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import LottieView from 'lottie-react-native';
 import { Exercise } from '../types/Exercise';
 import { ProgressManager } from '../managers/ProgressManager';
 import { NotificationManager } from '../managers/NotificationManager';
@@ -149,12 +148,7 @@ const CongratulationsOverlay: React.FC<{ onComplete: () => void }> = ({ onComple
 
   return (
     <View style={styles.congratsOverlay}>
-      <LottieView
-        source={require('../../assets/greeting_dog.json')}
-        autoPlay
-        loop={false}
-        style={styles.congratsLottie}
-      />
+      <Text style={styles.congratsEmoji}>🎉</Text>
       <Text style={styles.congratsText}>Fantastic Work!</Text>
     </View>
   );
@@ -366,9 +360,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  congratsLottie: {
-    width: 200,
-    height: 200,
+  congratsEmoji: {
+    fontSize: 80,
     marginBottom: 20,
   },
   congratsText: {
