@@ -1,13 +1,16 @@
 /**
  * ProgressManager - Tracks user progress and statistics
+ * Note: Using in-memory storage instead of AsyncStorage (Expo Go limitation)
  */
 
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Exercise } from '../types/Exercise';
 
 const PROGRESS_KEY = '@flexo_progress';
 const STREAK_KEY = '@flexo_streak';
 const LAST_EXERCISE_KEY = '@flexo_last_exercise';
+
+// In-memory storage for Expo Go compatibility
+const memoryStorage: { [key: string]: string } = {};
 
 export interface ExerciseSession {
   id: string;
@@ -40,8 +43,8 @@ export class ProgressManager {
 
   async loadProgress(): Promise<void> {
     try {
-      const progressData = await AsyncStorage.getItem(PROGRESS_KEY);
-      const streakData = await AsyncStorage.getItem(STREAK_KEY);
+      const progressData = memoryStorage[PROGRESS_KEY];
+      const streakData = memoryStorage[STREAK_KEY];
 
       if (progressData) {
         this.sessions = JSON.parse(progressData);
@@ -62,8 +65,8 @@ export class ProgressManager {
 
   async saveProgress(): Promise<void> {
     try {
-      await AsyncStorage.setItem(PROGRESS_KEY, JSON.stringify(this.sessions));
-      await AsyncStorage.setItem(STREAK_KEY, this.currentStreak.toString());
+      memoryStorage[PROGRESS_KEY] = JSON.stringify(this.sessions);
+      memoryStorage[STREAK_KEY] = this.currentStreak.toString();
       console.log('ProgressManager: Progress saved');
     } catch (error) {
       console.error('ProgressManager: Error saving progress:', error);
@@ -96,7 +99,7 @@ export class ProgressManager {
     }
 
     // Save last exercise date
-    await AsyncStorage.setItem(LAST_EXERCISE_KEY, new Date().toISOString());
+    memoryStorage[LAST_EXERCISE_KEY] = new Date().toISOString();
 
     await this.saveProgress();
     console.log('ProgressManager: Recorded exercise session:', session);
@@ -106,7 +109,7 @@ export class ProgressManager {
     const today = new Date().toDateString();
     const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000).toDateString();
     
-    const lastExerciseDate = await AsyncStorage.getItem(LAST_EXERCISE_KEY);
+    const lastExerciseDate = memoryStorage[LAST_EXERCISE_KEY];
     
     if (!lastExerciseDate) {
       this.currentStreak = 1;
@@ -190,7 +193,9 @@ export class ProgressManager {
     try {
       this.sessions = [];
       this.currentStreak = 0;
-      await AsyncStorage.multiRemove([PROGRESS_KEY, STREAK_KEY, LAST_EXERCISE_KEY]);
+      delete memoryStorage[PROGRESS_KEY];
+      delete memoryStorage[STREAK_KEY];
+      delete memoryStorage[LAST_EXERCISE_KEY];
       console.log('ProgressManager: Progress cleared');
     } catch (error) {
       console.error('ProgressManager: Error clearing progress:', error);

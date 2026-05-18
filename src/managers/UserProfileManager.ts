@@ -1,12 +1,14 @@
 /**
  * UserProfileManager - Manages user profile and onboarding status
  * Similar to UserProfileManager.swift in Pep project
+ * Note: Using in-memory storage instead of AsyncStorage (Expo Go limitation)
  */
-
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const ONBOARDED_KEY = '@flexo_onboarded';
 const USER_NAME_KEY = '@flexo_user_name';
+
+// In-memory storage for Expo Go compatibility
+const memoryStorage: { [key: string]: string } = {};
 
 export class UserProfileManager {
   private onboarded: boolean = false;
@@ -18,8 +20,8 @@ export class UserProfileManager {
 
   async loadUserData(): Promise<void> {
     try {
-      const onboardedValue = await AsyncStorage.getItem(ONBOARDED_KEY);
-      const nameValue = await AsyncStorage.getItem(USER_NAME_KEY);
+      const onboardedValue = memoryStorage[ONBOARDED_KEY];
+      const nameValue = memoryStorage[USER_NAME_KEY];
       
       this.onboarded = onboardedValue === 'true';
       this.userName = nameValue || '';
@@ -36,7 +38,7 @@ export class UserProfileManager {
   async setOnboarded(value: boolean): Promise<void> {
     try {
       this.onboarded = value;
-      await AsyncStorage.setItem(ONBOARDED_KEY, value.toString());
+      memoryStorage[ONBOARDED_KEY] = value.toString();
       console.log('UserProfileManager: Onboarded status set to', value);
     } catch (error) {
       console.error('UserProfileManager: Error setting onboarded status:', error);
@@ -46,7 +48,7 @@ export class UserProfileManager {
   async setUserName(name: string): Promise<void> {
     try {
       this.userName = name;
-      await AsyncStorage.setItem(USER_NAME_KEY, name);
+      memoryStorage[USER_NAME_KEY] = name;
       console.log('UserProfileManager: User name set to', name);
     } catch (error) {
       console.error('UserProfileManager: Error setting user name:', error);
@@ -63,7 +65,8 @@ export class UserProfileManager {
 
   async clearUserData(): Promise<void> {
     try {
-      await AsyncStorage.multiRemove([ONBOARDED_KEY, USER_NAME_KEY]);
+      delete memoryStorage[ONBOARDED_KEY];
+      delete memoryStorage[USER_NAME_KEY];
       this.onboarded = false;
       this.userName = '';
       console.log('UserProfileManager: User data cleared');
