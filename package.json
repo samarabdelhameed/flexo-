@@ -1,0 +1,32 @@
+{
+  "name": "flexo",
+  "version": "1.0.0",
+  "main": "index.ts",
+  "scripts": {
+    "start": "expo start",
+    "android": "expo start --android",
+    "ios": "expo start --ios",
+    "web": "expo start --web"
+  },
+  "dependencies": {
+    "@mediapipe/tasks-vision": "^0.10.35",
+    "@react-native-async-storage/async-storage": "^3.0.2",
+    "@react-navigation/native": "^7.2.4",
+    "@react-navigation/native-stack": "^7.15.1",
+    "expo": "~55.0.24",
+    "expo-av": "^16.0.8",
+    "expo-camera": "^55.0.18",
+    "expo-status-bar": "~55.0.6",
+    "lottie-react-native": "^7.3.8",
+    "react": "19.2.0",
+    "react-native": "0.83.6",
+    "react-native-safe-area-context": "~5.6.2",
+    "react-native-screens": "~4.23.0",
+    "react-native-vision-camera": "^5.0.9"
+  },
+  "devDependencies": {
+    "@types/react": "~19.2.2",
+    "typescript": "~5.9.2"
+  },
+  "private": true
+}
