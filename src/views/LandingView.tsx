@@ -1,6 +1,5 @@
 /**
  * LandingView - Main landing screen
- * Exact replica of LandingView.swift from Pep project
  */
 
 import React, { useState, useEffect, useRef } from 'react';
@@ -10,19 +9,15 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
-  Animated,
-  Alert,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import LottieView from 'lottie-react-native';
 import * as Haptics from 'expo-haptics';
-import { VoiceManager, VoiceStatus } from '../managers/VoiceManager';
-import { UserProfileManager } from '../managers/UserProfileManager';
 import { OnboardManager } from '../managers/OnboardManager';
+import { UserProfileManager } from '../managers/UserProfileManager';
 import type { RootStackParamList } from '../types/navigation';
 
-// Lottie animation for welcome screen (similar to WelcomeAnimation in Swift)
 const WelcomeAnimation: React.FC = () => {
   return (
     <View style={styles.animationContainer}>
@@ -36,7 +31,6 @@ const WelcomeAnimation: React.FC = () => {
   );
 };
 
-// Message Bubble Component (similar to MessageBubble in Swift)
 const MessageBubble: React.FC<{ message: string }> = ({ message }) => {
   return (
     <View style={styles.messageBubble}>
@@ -45,120 +39,80 @@ const MessageBubble: React.FC<{ message: string }> = ({ message }) => {
   );
 };
 
-// Messages View Component (similar to MessagesView in Swift)
 const MessagesView: React.FC<{ messages: string[] }> = ({ messages }) => {
+  const scrollRef = useRef<ScrollView>(null);
+
+  useEffect(() => {
+    scrollRef.current?.scrollToEnd({ animated: true });
+  }, [messages]);
+
   return (
-    <ScrollView style={styles.messagesContainer}>
-      <View style={styles.messagesContent}>
-        {messages.map((message, index) => (
-          <MessageBubble key={index} message={message} />
-        ))}
-      </View>
+    <ScrollView
+      ref={scrollRef}
+      style={styles.messagesContainer}
+      contentContainerStyle={styles.messagesContent}
+    >
+      {messages.map((msg, index) => (
+        <MessageBubble key={index} message={msg} />
+      ))}
     </ScrollView>
   );
 };
 
-// Main Landing View
 export const LandingView: React.FC = () => {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
-  // State Objects and Dependencies
   const [userProfileManager] = useState(() => new UserProfileManager());
-  const [voiceManager] = useState(() => new VoiceManager());
-  const [onboardManager] = useState(
-    () => new OnboardManager(userProfileManager, voiceManager)
-  );
-
-  // Local state
-  const [showExerciseSelection, setShowExerciseSelection] = useState(false);
-  const [showLottie, setShowLottie] = useState(true);
-  const [showError, setShowError] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');
-  const [isOnboarded, setIsOnboarded] = useState(false);
+  const [onboardManager] = useState(() => new OnboardManager(userProfileManager, null as any));
   const [messages, setMessages] = useState<string[]>([]);
-  const [status, setStatus] = useState<VoiceStatus>(VoiceStatus.DISCONNECTED);
+  const [isConnected, setIsConnected] = useState(false);
+  const [isOnboarded, setIsOnboarded] = useState(false);
+  const updateInterval = useRef<NodeJS.Timeout | null>(null);
 
-  // Computed property: shouldShowContinueButton
-  const shouldShowContinueButton = isOnboarded
-    ? status === VoiceStatus.CONNECTED
-    : status === VoiceStatus.CONNECTED;
-
-  // Start appropriate conversation on mount
   useEffect(() => {
-    startAppropriateConversation();
-    return () => {
-      endCurrentConversation();
-    };
-  }, []);
-
-  // Update messages and status
-  useEffect(() => {
-    const interval = setInterval(() => {
-      if (isOnboarded) {
-        setMessages(voiceManager.getMessages());
-        setStatus(voiceManager.getStatus());
-      } else {
-        setMessages(onboardManager.getMessages());
-        setStatus(onboardManager.getStatus());
-      }
-    }, 500);
-
-    return () => clearInterval(interval);
-  }, [isOnboarded]);
-
-  // Check onboarded status
-  useEffect(() => {
-    const checkOnboarded = async () => {
+    const init = async () => {
       await userProfileManager.loadUserData();
       setIsOnboarded(userProfileManager.isOnboarded());
+
+      // Start onboarding conversation
+      await onboardManager.startOnboardingConversation();
+      
+      // Update messages every 500ms
+      updateInterval.current = setInterval(() => {
+        const currentMessages = onboardManager.getMessages();
+        setMessages([...currentMessages]);
+        
+        // Check if connected
+        if (currentMessages.length > 0) {
+          setIsConnected(true);
+        }
+      }, 500);
     };
-    checkOnboarded();
+    init();
+
+    return () => {
+      if (updateInterval.current) {
+        clearInterval(updateInterval.current);
+      }
+      onboardManager.stopOnboardingConversation();
+    };
   }, []);
 
-  // Helper Methods
-  const startAppropriateConversation = async () => {
-    try {
-      await userProfileManager.loadUserData();
-      const onboarded = userProfileManager.isOnboarded();
-      setIsOnboarded(onboarded);
-
-      if (onboarded) {
-        await voiceManager.startConversation();
-      } else {
-        await onboardManager.startOnboardingConversation();
-      }
-    } catch (error) {
-      console.error('Error starting conversation:', error);
-    }
-  };
-
-  const endCurrentConversation = () => {
-    if (isOnboarded) {
-      voiceManager.stopConversation();
-    } else {
-      onboardManager.stopOnboardingConversation();
-    }
-  };
-
   const handleContinuePress = () => {
-    // Add haptic feedback
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    // Navigate to ExerciseSelectionView
     navigation.navigate('ExerciseSelection', { userProfileManager });
   };
 
   return (
     <View style={styles.container}>
       <View style={styles.content}>
-        {showLottie && (
-          <View style={styles.animationWrapper}>
-            <WelcomeAnimation />
-          </View>
-        )}
+        <View style={styles.animationWrapper}>
+          <WelcomeAnimation />
+        </View>
 
         <MessagesView messages={messages} />
 
-        {shouldShowContinueButton && (
+        {isConnected && (
           <TouchableOpacity style={styles.continueButton} onPress={handleContinuePress}>
             <Text style={styles.continueButtonText}>Continue to Exercises</Text>
           </TouchableOpacity>

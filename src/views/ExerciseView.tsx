@@ -1,6 +1,5 @@
 /**
  * ExerciseView - Exercise execution screen with REAL camera and hand tracking
- * Exact replica of ExerciseView.swift from Pep project with MediaPipe integration
  */
 
 import React, { useState, useEffect, useRef } from 'react';
@@ -11,14 +10,13 @@ import {
   ScrollView,
   TouchableOpacity,
   Dimensions,
-  Platform,
 } from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Camera, CameraView } from 'expo-camera';
 import { activateKeepAwakeAsync, deactivateKeepAwake } from 'expo-keep-awake';
-import { VoiceManager } from '../managers/VoiceManager';
-import { ExerciseManager, HandPosePoint } from '../managers/ExerciseManager';
+import { useVoiceManager, VoiceStatus } from '../managers/VoiceManager';
+import { ExerciseManager } from '../managers/ExerciseManager';
 import { HandSkeletonOverlay } from '../components/HandSkeletonOverlay';
 import { Exercise } from '../types/Exercise';
 import type { RootStackParamList } from '../types/navigation';
@@ -30,123 +28,45 @@ export const ExerciseView: React.FC = () => {
   const route = useRoute<RouteProp<RootStackParamList, 'Exercise'>>();
   const { exercise } = route.params;
 
-  const [voiceManager] = useState(() => new VoiceManager());
+  const voiceManager = useVoiceManager();
   const [exerciseManager] = useState(() => new ExerciseManager());
-  const [messages, setMessages] = useState<string[]>([]);
   const [handPosePoints, setHandPosePoints] = useState<any[]>([]);
   const [hasPermission, setHasPermission] = useState<boolean | null>(null);
   const [showReport, setShowReport] = useState(false);
-  const [isMediaPipeReady, setIsMediaPipeReady] = useState(false);
   const cameraRef = useRef<any>(null);
-  const frameProcessingInterval = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
-    // Request camera permissions
     (async () => {
       const { status } = await Camera.requestCameraPermissionsAsync();
       setHasPermission(status === 'granted');
     })();
 
-    // Keep screen awake during exercise
     activateKeepAwakeAsync();
 
-    // Start exercise and voice managers
     const startManagers = async () => {
-      console.log('🚀 Starting ExerciseManager and VoiceManager concurrently...');
-      
-      // Start exercise session
+      console.log('Starting ExerciseManager and VoiceManager...');
+
       await exerciseManager.startSession();
-      
-      // Check if MediaPipe is ready
-      const checkMediaPipe = setInterval(() => {
-        if (exerciseManager.isMediaPipeReady()) {
-          setIsMediaPipeReady(true);
-          console.log('✅ MediaPipe is ready for REAL hand tracking!');
-          clearInterval(checkMediaPipe);
-        }
-      }, 500);
 
-      // Start voice conversation after 1.5 seconds
       setTimeout(async () => {
-        console.log('🎙 Starting VoiceManager...');
+        console.log('Starting VoiceManager...');
         await voiceManager.startConversation();
-        
-        // Exercise-specific conversation flow (like Pep video)
-        setTimeout(() => {
-          voiceManager.addMessage(`Today we'll start with ${exercise.name}.`);
-        }, 9000);
-
-        setTimeout(() => {
-          voiceManager.addMessage('Can you see your hand in the camera view?');
-        }, 11000);
-
-        setTimeout(() => {
-          voiceManager.addMessage('Perfect! Let\'s begin the exercise.');
-        }, 13000);
-
-        // Start hand detection feedback loop
-        setTimeout(() => {
-          startHandDetectionFeedback();
-        }, 15000);
       }, 1500);
     };
 
     startManagers();
 
-    // Update messages and hand pose periodically
     const interval = setInterval(() => {
-      setMessages(voiceManager.getMessages());
       setHandPosePoints(exerciseManager.getHandPosePoints());
-    }, 100); // Update at 10 FPS for smooth visualization
+    }, 100);
 
     return () => {
       clearInterval(interval);
-      if (frameProcessingInterval.current) {
-        clearInterval(frameProcessingInterval.current);
-      }
       exerciseManager.stopSession();
       voiceManager.stopConversation();
       deactivateKeepAwake();
     };
   }, []);
-
-  const startHandDetectionFeedback = () => {
-    let lastHandDetected = false;
-    let feedbackTimer = 0;
-
-    const feedbackLoop = setInterval(() => {
-      const handDetected = exerciseManager.isHandDetected();
-      
-      if (handDetected && !lastHandDetected) {
-        voiceManager.addMessage('Great! I can see your hand. Keep your fingers spread wide.');
-        console.log('👋 Hand detected!');
-      } else if (!handDetected && lastHandDetected) {
-        voiceManager.addMessage('I lost sight of your hand. Please position it in the camera view.');
-        console.log('❌ Hand lost');
-      }
-
-      // Periodic encouragement
-      if (handDetected) {
-        feedbackTimer++;
-        if (feedbackTimer === 30) { // Every 3 seconds
-          const encouragements = [
-            'Make sure your fingers are fully extended like a fan.',
-            'Keep your wrist straight and relaxed.',
-            'Excellent form! You\'re doing great! 💪',
-            'Perfect! Hold that position.',
-            'Great job! Keep it up!',
-          ];
-          const randomMsg = encouragements[Math.floor(Math.random() * encouragements.length)];
-          voiceManager.addMessage(randomMsg);
-          feedbackTimer = 0;
-        }
-      }
-
-      lastHandDetected = handDetected;
-    }, 100);
-
-    return () => clearInterval(feedbackLoop);
-  };
 
   const handleCompleteExercise = () => {
     setShowReport(true);
@@ -172,37 +92,25 @@ export const ExerciseView: React.FC = () => {
 
   return (
     <View style={styles.container}>
-      {/* Camera Layer - REAL camera feed */}
       <CameraView
         ref={cameraRef}
         style={styles.camera}
         facing="front"
       />
 
-      {/* MediaPipe Status Indicator */}
-      {!isMediaPipeReady && (
-        <View style={styles.statusOverlay}>
-          <Text style={styles.statusText}>⚠️ Using simulated hand tracking</Text>
-          <Text style={styles.statusSubtext}>Real hand tracking requires native implementation</Text>
-        </View>
-      )}
-
-      {/* Hand Pose Visualization Layer - REAL hand tracking data */}
       {handPosePoints.length > 0 && (
         <HandSkeletonOverlay points={handPosePoints} />
       )}
 
-      {/* Messages Overlay */}
       <View style={styles.messagesOverlay}>
         <ScrollView style={styles.messagesScroll}>
-          {messages.map((message, index) => (
+          {voiceManager.messages.map((message, index) => (
             <View key={index} style={styles.messageContainer}>
-              <Text style={styles.messageText}>{message}</Text>
+              <Text style={styles.messageText}>{message.text}</Text>
             </View>
           ))}
         </ScrollView>
 
-        {/* Complete Exercise Button */}
         <TouchableOpacity
           style={styles.completeButton}
           onPress={handleCompleteExercise}
@@ -250,10 +158,6 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.7)',
     padding: 10,
     borderRadius: 10,
-  },
-  handPoseOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    pointerEvents: 'none',
   },
   messagesOverlay: {
     position: 'absolute',
