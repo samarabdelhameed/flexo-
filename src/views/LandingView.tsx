@@ -13,7 +13,6 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import * as Haptics from 'expo-haptics';
 import { OnboardManager } from '../managers/OnboardManager';
 import { UserProfileManager } from '../managers/UserProfileManager';
 import type { RootStackParamList } from '../types/navigation';
@@ -97,7 +96,7 @@ export const LandingView: React.FC = () => {
   }, []);
 
   const handleContinuePress = () => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    console.log('Continue button pressed');
     navigation.navigate('ExerciseSelection', { userProfileManager });
   };
 

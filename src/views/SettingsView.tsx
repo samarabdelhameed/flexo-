@@ -13,7 +13,6 @@ import {
   Alert,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import * as Haptics from 'expo-haptics';
 import { UserProfileManager } from '../managers/UserProfileManager';
 import { ProgressManager } from '../managers/ProgressManager';
 import { NotificationManager } from '../managers/NotificationManager';
@@ -39,9 +38,7 @@ export const SettingsView: React.FC = () => {
 
   const handleNotificationToggle = async (value: boolean) => {
     setNotificationsEnabled(value);
-    if (hapticEnabled) {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    }
+    console.log('Notifications toggled:', value);
     
     if (value) {
       await notificationManager.scheduleDailyReminder();
@@ -52,9 +49,7 @@ export const SettingsView: React.FC = () => {
 
   const handleHapticToggle = (value: boolean) => {
     setHapticEnabled(value);
-    if (value) {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    }
+    console.log('Haptic feedback toggled:', value);
   };
 
   const handleResetProgress = () => {
@@ -68,9 +63,7 @@ export const SettingsView: React.FC = () => {
           style: 'destructive',
           onPress: async () => {
             await progressManager.clearProgress();
-            if (hapticEnabled) {
-              Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-            }
+            console.log('Progress reset');
             Alert.alert('Success', 'Progress has been reset.');
           },
         },
@@ -89,9 +82,7 @@ export const SettingsView: React.FC = () => {
           style: 'destructive',
           onPress: async () => {
             await userProfileManager.clearUserData();
-            if (hapticEnabled) {
-              Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-            }
+            console.log('Onboarding reset');
             navigation.goBack();
           },
         },

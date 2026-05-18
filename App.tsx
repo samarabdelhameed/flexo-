@@ -6,7 +6,6 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { StatusBar } from 'expo-status-bar';
 import { ConversationProvider } from '@elevenlabs/react-native';
 import { LandingView } from './src/views/LandingView';
 import { ExerciseSelectionView } from './src/views/ExerciseSelectionView';
@@ -25,7 +24,6 @@ export default function App() {
   return (
     <ConversationProvider agentId={AGENT_ID}>
       <NavigationContainer>
-        <StatusBar style="auto" />
         <Stack.Navigator
           initialRouteName="Landing"
           screenOptions={{

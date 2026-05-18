@@ -38,10 +38,6 @@
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "plugins": [
-      "expo-font",
-      "@livekit/react-native-expo-plugin",
-      "@config-plugins/react-native-webrtc"
-    ]
+    "plugins": []
   }
 }

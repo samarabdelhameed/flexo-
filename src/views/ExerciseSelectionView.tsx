@@ -13,7 +13,6 @@ import {
 } from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import * as Haptics from 'expo-haptics';
 import { EXERCISES, Exercise, ExerciseType } from '../types/Exercise';
 import { UserProfileManager } from '../managers/UserProfileManager';
 import type { RootStackParamList } from '../types/navigation';
@@ -70,15 +69,14 @@ export const ExerciseSelectionView: React.FC = () => {
   const [selectedExercise, setSelectedExercise] = useState<Exercise | null>(null);
 
   const handleExercisePress = (exercise: Exercise) => {
-    // Add haptic feedback
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    console.log('Exercise selected:', exercise.name);
     setSelectedExercise(exercise);
     // Navigate to ExerciseView
     navigation.navigate('Exercise', { exercise });
   };
 
   const handleSettingsPress = () => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    console.log('Settings pressed');
     navigation.navigate('Settings');
   };
 
