@@ -14,7 +14,10 @@ import {
 } from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import LottieView from 'lottie-react-native';
 import { Exercise } from '../types/Exercise';
+import { ProgressManager } from '../managers/ProgressManager';
+import { NotificationManager } from '../managers/NotificationManager';
 import type { RootStackParamList } from '../types/navigation';
 
 // Header Section Component
@@ -63,7 +66,11 @@ const ExerciseStats: React.FC<ExerciseStatsProps> = ({ duration, completed }) =>
 };
 
 // Progress Board Section Component
-const ProgressBoardSection: React.FC<{ dayStreak: number }> = ({ dayStreak }) => {
+const ProgressBoardSection: React.FC<{ dayStreak: number; totalSessions: number; totalMinutes: number }> = ({ 
+  dayStreak, 
+  totalSessions, 
+  totalMinutes 
+}) => {
   return (
     <View style={styles.progressSection}>
       <Text style={styles.sectionTitle}>Progress Board</Text>
@@ -73,12 +80,12 @@ const ProgressBoardSection: React.FC<{ dayStreak: number }> = ({ dayStreak }) =>
           <Text style={styles.progressLabel}>Day Streak</Text>
         </View>
         <View style={styles.progressCard}>
-          <Text style={styles.progressEmoji}>🔥</Text>
-          <Text style={styles.progressLabel}>Consistency</Text>
+          <Text style={styles.progressNumber}>{totalSessions}</Text>
+          <Text style={styles.progressLabel}>Total Sessions</Text>
         </View>
         <View style={styles.progressCard}>
-          <Text style={styles.progressEmoji}>🏔️</Text>
-          <Text style={styles.progressLabel}>Goal Tracking</Text>
+          <Text style={styles.progressNumber}>{totalMinutes}</Text>
+          <Text style={styles.progressLabel}>Minutes</Text>
         </View>
       </View>
       <View style={styles.divider} />
@@ -142,7 +149,12 @@ const CongratulationsOverlay: React.FC<{ onComplete: () => void }> = ({ onComple
 
   return (
     <View style={styles.congratsOverlay}>
-      <Text style={styles.congratsEmoji}>👋</Text>
+      <LottieView
+        source={require('../../assets/greeting_dog.json')}
+        autoPlay
+        loop={false}
+        style={styles.congratsLottie}
+      />
       <Text style={styles.congratsText}>Fantastic Work!</Text>
     </View>
   );
@@ -155,8 +167,30 @@ export const ExerciseReportView: React.FC = () => {
   const { exercise } = route.params;
 
   const [showingCongrats, setShowingCongrats] = useState(true);
+  const [progressManager] = useState(() => new ProgressManager());
+  const [notificationManager] = useState(() => new NotificationManager());
+  const [progressStats, setProgressStats] = useState({
+    currentStreak: 0,
+    totalSessions: 0,
+    totalMinutes: 0,
+  });
+
   const date = new Date();
   const duration = exercise.duration || 30;
+
+  useEffect(() => {
+    // Record this exercise session
+    const recordSession = async () => {
+      await progressManager.recordExerciseSession(exercise, duration, true, 2, 4);
+      const stats = progressManager.getProgressStats();
+      setProgressStats(stats);
+      
+      // Schedule next reminder
+      await notificationManager.scheduleDailyReminder();
+    };
+
+    recordSession();
+  }, []);
 
   const handleClose = () => {
     navigation.goBack();
@@ -191,7 +225,11 @@ export const ExerciseReportView: React.FC = () => {
 
         <ExerciseStats duration={duration} completed={true} />
 
-        <ProgressBoardSection dayStreak={4} />
+        <ProgressBoardSection 
+          dayStreak={progressStats.currentStreak} 
+          totalSessions={progressStats.totalSessions}
+          totalMinutes={progressStats.totalMinutes}
+        />
 
         <MotivationalMessageSection />
 
@@ -328,8 +366,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  congratsEmoji: {
-    fontSize: 100,
+  congratsLottie: {
+    width: 200,
+    height: 200,
     marginBottom: 20,
   },
   congratsText: {

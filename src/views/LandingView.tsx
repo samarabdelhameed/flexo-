@@ -15,36 +15,24 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import LottieView from 'lottie-react-native';
+import * as Haptics from 'expo-haptics';
 import { VoiceManager, VoiceStatus } from '../managers/VoiceManager';
 import { UserProfileManager } from '../managers/UserProfileManager';
 import { OnboardManager } from '../managers/OnboardManager';
 import type { RootStackParamList } from '../types/navigation';
 
-// Simple animation for welcome screen (similar to WelcomeAnimation in Swift)
+// Lottie animation for welcome screen (similar to WelcomeAnimation in Swift)
 const WelcomeAnimation: React.FC = () => {
-  const scaleAnim = useRef(new Animated.Value(1)).current;
-
-  useEffect(() => {
-    Animated.loop(
-      Animated.sequence([
-        Animated.timing(scaleAnim, {
-          toValue: 1.2,
-          duration: 1000,
-          useNativeDriver: true,
-        }),
-        Animated.timing(scaleAnim, {
-          toValue: 1.0,
-          duration: 1000,
-          useNativeDriver: true,
-        }),
-      ])
-    ).start();
-  }, []);
-
   return (
-    <Animated.View style={[styles.animationContainer, { transform: [{ scale: scaleAnim }] }]}>
-      <Text style={styles.waveEmoji}>👋</Text>
-    </Animated.View>
+    <View style={styles.animationContainer}>
+      <LottieView
+        source={require('../../assets/greeting_dog.json')}
+        autoPlay
+        loop
+        style={styles.lottie}
+      />
+    </View>
   );
 };
 
@@ -153,6 +141,8 @@ export const LandingView: React.FC = () => {
   };
 
   const handleContinuePress = () => {
+    // Add haptic feedback
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     // Navigate to ExerciseSelectionView
     navigation.navigate('ExerciseSelection', { userProfileManager });
   };
@@ -196,13 +186,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   animationContainer: {
-    width: 100,
-    height: 100,
+    width: 200,
+    height: 200,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  waveEmoji: {
-    fontSize: 80,
+  lottie: {
+    width: 200,
+    height: 200,
   },
   messagesContainer: {
     height: 200,

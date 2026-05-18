@@ -10,6 +10,7 @@ export type RootStackParamList = {
   ExerciseSelection: { userProfileManager: UserProfileManager };
   Exercise: { exercise: Exercise };
   ExerciseReport: { exercise: Exercise };
+  Settings: undefined;
 };
 
 declare global {

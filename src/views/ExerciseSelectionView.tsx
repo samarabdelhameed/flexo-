@@ -13,6 +13,7 @@ import {
 } from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import * as Haptics from 'expo-haptics';
 import { EXERCISES, Exercise, ExerciseType } from '../types/Exercise';
 import { UserProfileManager } from '../managers/UserProfileManager';
 import type { RootStackParamList } from '../types/navigation';
@@ -69,14 +70,26 @@ export const ExerciseSelectionView: React.FC = () => {
   const [selectedExercise, setSelectedExercise] = useState<Exercise | null>(null);
 
   const handleExercisePress = (exercise: Exercise) => {
+    // Add haptic feedback
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     setSelectedExercise(exercise);
     // Navigate to ExerciseView
     navigation.navigate('Exercise', { exercise });
   };
 
+  const handleSettingsPress = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    navigation.navigate('Settings');
+  };
+
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Choose Your Exercise</Text>
+      <View style={styles.header}>
+        <Text style={styles.title}>Choose Your Exercise</Text>
+        <TouchableOpacity onPress={handleSettingsPress} style={styles.settingsButton}>
+          <Text style={styles.settingsIcon}>⚙️</Text>
+        </TouchableOpacity>
+      </View>
       <Text style={styles.subtitle}>
         Select the exercise that matches your comfort level
       </Text>
@@ -100,12 +113,24 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     paddingTop: 40,
   },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    marginBottom: 10,
+  },
   title: {
     fontSize: 28,
     fontWeight: 'bold',
-    textAlign: 'center',
-    marginBottom: 10,
     color: '#000000',
+    flex: 1,
+  },
+  settingsButton: {
+    padding: 10,
+  },
+  settingsIcon: {
+    fontSize: 24,
   },
   subtitle: {
     fontSize: 16,

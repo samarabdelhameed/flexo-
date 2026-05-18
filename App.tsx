@@ -11,6 +11,7 @@ import { LandingView } from './src/views/LandingView';
 import { ExerciseSelectionView } from './src/views/ExerciseSelectionView';
 import { ExerciseView } from './src/views/ExerciseView';
 import { ExerciseReportView } from './src/views/ExerciseReportView';
+import { SettingsView } from './src/views/SettingsView';
 import { UserProfileManager } from './src/managers/UserProfileManager';
 
 const Stack = createNativeStackNavigator();
@@ -38,6 +39,11 @@ export default function App() {
           name="ExerciseReport" 
           component={ExerciseReportView}
           options={{ presentation: 'fullScreenModal' }}
+        />
+        <Stack.Screen 
+          name="Settings" 
+          component={SettingsView}
+          options={{ presentation: 'modal' }}
         />
       </Stack.Navigator>
     </NavigationContainer>

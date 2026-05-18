@@ -37,13 +37,21 @@ export class VoiceManager {
       console.log('VoiceManager: Starting conversation...');
       this.status = VoiceStatus.CONNECTING;
       
-      // TODO: Implement ElevenLabs API integration
-      // For now, simulate connection
+      // Simulate realistic conversation flow
       setTimeout(() => {
         this.status = VoiceStatus.CONNECTED;
-        this.messages.push('Welcome to Flexo! How are you feeling today?');
+        this.messages.push('Welcome to Flexo! 🎉');
         console.log('VoiceManager: Connected successfully');
       }, 1500);
+
+      // Add more messages over time to simulate conversation
+      setTimeout(() => {
+        this.messages.push('I\'m here to help you with your physical therapy exercises.');
+      }, 3000);
+
+      setTimeout(() => {
+        this.messages.push('How are you feeling today?');
+      }, 4500);
       
     } catch (error) {
       console.error('VoiceManager: Error starting conversation:', error);

@@ -15,6 +15,7 @@ import {
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Camera, CameraView } from 'expo-camera';
+import { activateKeepAwakeAsync, deactivateKeepAwake } from 'expo-keep-awake';
 import { VoiceManager } from '../managers/VoiceManager';
 import { ExerciseManager } from '../managers/ExerciseManager';
 import { Exercise } from '../types/Exercise';
@@ -41,6 +42,9 @@ export const ExerciseView: React.FC = () => {
       setHasPermission(status === 'granted');
     })();
 
+    // Keep screen awake during exercise
+    activateKeepAwakeAsync();
+
     // Start exercise and voice managers
     const startManagers = async () => {
       console.log('🚀 Starting ExerciseManager and VoiceManager concurrently...');
@@ -52,6 +56,19 @@ export const ExerciseView: React.FC = () => {
       setTimeout(async () => {
         console.log('🎙 Starting VoiceManager...');
         await voiceManager.startConversation();
+        
+        // Add exercise-specific messages
+        setTimeout(() => {
+          voiceManager.addMessage(`Great! Let's start with ${exercise.name}.`);
+        }, 2000);
+
+        setTimeout(() => {
+          voiceManager.addMessage('Position your hand in front of the camera.');
+        }, 4000);
+
+        setTimeout(() => {
+          voiceManager.addMessage('I\'ll guide you through the exercise. Let\'s begin!');
+        }, 6000);
       }, 1500);
     };
 
@@ -67,6 +84,7 @@ export const ExerciseView: React.FC = () => {
       clearInterval(interval);
       exerciseManager.stopSession();
       voiceManager.stopConversation();
+      deactivateKeepAwake();
     };
   }, []);
 
