@@ -9,10 +9,10 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
+  Image,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import LottieView from 'lottie-react-native';
 import * as Haptics from 'expo-haptics';
 import { OnboardManager } from '../managers/OnboardManager';
 import { UserProfileManager } from '../managers/UserProfileManager';
@@ -21,11 +21,9 @@ import type { RootStackParamList } from '../types/navigation';
 const WelcomeAnimation: React.FC = () => {
   return (
     <View style={styles.animationContainer}>
-      <LottieView
-        source={require('../../assets/greeting_dog.json')}
-        autoPlay
-        loop
-        style={styles.lottie}
+      <Image
+        source={require('../../assets/icon.png')}
+        style={styles.welcomeIcon}
       />
     </View>
   );
@@ -145,9 +143,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  lottie: {
-    width: 200,
-    height: 200,
+  welcomeIcon: {
+    width: 150,
+    height: 150,
+    borderRadius: 75,
   },
   messagesContainer: {
     height: 200,
