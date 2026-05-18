@@ -14,9 +14,11 @@ import {
   Alert,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { VoiceManager, VoiceStatus } from '../managers/VoiceManager';
 import { UserProfileManager } from '../managers/UserProfileManager';
 import { OnboardManager } from '../managers/OnboardManager';
+import type { RootStackParamList } from '../types/navigation';
 
 // Simple animation for welcome screen (similar to WelcomeAnimation in Swift)
 const WelcomeAnimation: React.FC = () => {
@@ -70,7 +72,7 @@ const MessagesView: React.FC<{ messages: string[] }> = ({ messages }) => {
 
 // Main Landing View
 export const LandingView: React.FC = () => {
-  const navigation = useNavigation();
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   // State Objects and Dependencies
   const [userProfileManager] = useState(() => new UserProfileManager());
@@ -152,7 +154,7 @@ export const LandingView: React.FC = () => {
 
   const handleContinuePress = () => {
     // Navigate to ExerciseSelectionView
-    navigation.navigate('ExerciseSelection' as never);
+    navigation.navigate('ExerciseSelection', { userProfileManager });
   };
 
   return (

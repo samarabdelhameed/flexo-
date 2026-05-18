@@ -12,8 +12,10 @@ import {
   TouchableOpacity,
   Alert,
 } from 'react-native';
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Exercise } from '../types/Exercise';
+import type { RootStackParamList } from '../types/navigation';
 
 // Header Section Component
 const HeaderSection: React.FC<{ date: Date }> = ({ date }) => {
@@ -148,9 +150,9 @@ const CongratulationsOverlay: React.FC<{ onComplete: () => void }> = ({ onComple
 
 // Main Exercise Report View
 export const ExerciseReportView: React.FC = () => {
-  const navigation = useNavigation();
-  const route = useRoute();
-  const { exercise } = route.params as { exercise: Exercise };
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const route = useRoute<RouteProp<RootStackParamList, 'ExerciseReport'>>();
+  const { exercise } = route.params;
 
   const [showingCongrats, setShowingCongrats] = useState(true);
   const date = new Date();

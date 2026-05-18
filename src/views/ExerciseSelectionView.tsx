@@ -11,9 +11,11 @@ import {
   ScrollView,
   TouchableOpacity,
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { EXERCISES, Exercise, ExerciseType } from '../types/Exercise';
 import { UserProfileManager } from '../managers/UserProfileManager';
+import type { RootStackParamList } from '../types/navigation';
 
 // Exercise Card Component (similar to ExerciseCard in Swift)
 interface ExerciseCardProps {
@@ -60,20 +62,16 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({ exercise, onPress }) => {
 };
 
 // Main Exercise Selection View
-interface ExerciseSelectionViewProps {
-  userProfileManager: UserProfileManager;
-}
-
-export const ExerciseSelectionView: React.FC<ExerciseSelectionViewProps> = ({
-  userProfileManager,
-}) => {
-  const navigation = useNavigation();
+export const ExerciseSelectionView: React.FC = () => {
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const route = useRoute<RouteProp<RootStackParamList, 'ExerciseSelection'>>();
+  const { userProfileManager } = route.params;
   const [selectedExercise, setSelectedExercise] = useState<Exercise | null>(null);
 
   const handleExercisePress = (exercise: Exercise) => {
     setSelectedExercise(exercise);
     // Navigate to ExerciseView
-    navigation.navigate('Exercise' as never, { exercise } as never);
+    navigation.navigate('Exercise', { exercise });
   };
 
   return (

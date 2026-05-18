@@ -1,20 +1,45 @@
+/**
+ * Main App Entry Point
+ * Sets up navigation and connects all views
+ */
+
+import React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { LandingView } from './src/views/LandingView';
+import { ExerciseSelectionView } from './src/views/ExerciseSelectionView';
+import { ExerciseView } from './src/views/ExerciseView';
+import { ExerciseReportView } from './src/views/ExerciseReportView';
+import { UserProfileManager } from './src/managers/UserProfileManager';
+
+const Stack = createNativeStackNavigator();
 
 export default function App() {
+  const userProfileManager = new UserProfileManager();
+
   return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
+    <NavigationContainer>
       <StatusBar style="auto" />
-    </View>
+      <Stack.Navigator
+        initialRouteName="Landing"
+        screenOptions={{
+          headerShown: false,
+        }}
+      >
+        <Stack.Screen name="Landing" component={LandingView} />
+        <Stack.Screen 
+          name="ExerciseSelection" 
+          component={ExerciseSelectionView}
+          initialParams={{ userProfileManager }}
+        />
+        <Stack.Screen name="Exercise" component={ExerciseView} />
+        <Stack.Screen 
+          name="ExerciseReport" 
+          component={ExerciseReportView}
+          options={{ presentation: 'fullScreenModal' }}
+        />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});

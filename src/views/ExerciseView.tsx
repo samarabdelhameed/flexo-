@@ -12,18 +12,20 @@ import {
   TouchableOpacity,
   Dimensions,
 } from 'react-native';
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Camera, CameraView } from 'expo-camera';
 import { VoiceManager } from '../managers/VoiceManager';
 import { ExerciseManager } from '../managers/ExerciseManager';
 import { Exercise } from '../types/Exercise';
+import type { RootStackParamList } from '../types/navigation';
 
 const { width, height } = Dimensions.get('window');
 
 export const ExerciseView: React.FC = () => {
-  const navigation = useNavigation();
-  const route = useRoute();
-  const { exercise } = route.params as { exercise: Exercise };
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const route = useRoute<RouteProp<RootStackParamList, 'Exercise'>>();
+  const { exercise } = route.params;
 
   const [voiceManager] = useState(() => new VoiceManager());
   const [exerciseManager] = useState(() => new ExerciseManager());
@@ -70,7 +72,7 @@ export const ExerciseView: React.FC = () => {
 
   const handleCompleteExercise = () => {
     setShowReport(true);
-    navigation.navigate('ExerciseReport' as never, { exercise } as never);
+    navigation.navigate('ExerciseReport', { exercise });
   };
 
   if (hasPermission === null) {
