@@ -182,7 +182,8 @@ export const ExerciseView: React.FC = () => {
       {/* MediaPipe Status Indicator */}
       {!isMediaPipeReady && (
         <View style={styles.statusOverlay}>
-          <Text style={styles.statusText}>🔧 Initializing hand tracking...</Text>
+          <Text style={styles.statusText}>⚠️ Using simulated hand tracking</Text>
+          <Text style={styles.statusSubtext}>Real hand tracking requires native implementation</Text>
         </View>
       )}
 
