@@ -1,8 +1,8 @@
 /**
- * ExerciseView - Exercise execution screen with REAL camera and hand tracking
+ * ExerciseView - Exercise execution screen (simplified for Expo Go)
  */
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -13,9 +13,7 @@ import {
 } from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { Camera, CameraView } from 'expo-camera';
 import { activateKeepAwakeAsync, deactivateKeepAwake } from 'expo-keep-awake';
-import { useVoiceManager, VoiceStatus } from '../managers/VoiceManager';
 import { ExerciseManager } from '../managers/ExerciseManager';
 import { HandSkeletonOverlay } from '../components/HandSkeletonOverlay';
 import { Exercise } from '../types/Exercise';
@@ -28,34 +26,53 @@ export const ExerciseView: React.FC = () => {
   const route = useRoute<RouteProp<RootStackParamList, 'Exercise'>>();
   const { exercise } = route.params;
 
-  const voiceManager = useVoiceManager();
   const [exerciseManager] = useState(() => new ExerciseManager());
+  const [messages, setMessages] = useState<string[]>([]);
   const [handPosePoints, setHandPosePoints] = useState<any[]>([]);
-  const [hasPermission, setHasPermission] = useState<boolean | null>(null);
-  const [showReport, setShowReport] = useState(false);
-  const cameraRef = useRef<any>(null);
 
   useEffect(() => {
-    (async () => {
-      const { status } = await Camera.requestCameraPermissionsAsync();
-      setHasPermission(status === 'granted');
-    })();
-
+    // Keep screen awake during exercise
     activateKeepAwakeAsync();
 
-    const startManagers = async () => {
-      console.log('Starting ExerciseManager and VoiceManager...');
+    // Start exercise session
+    const startExercise = async () => {
+      console.log('🚀 Starting exercise...');
+      
+      // Simulate exercise flow
+      setTimeout(() => {
+        setMessages(prev => [...prev, `Today we'll start with ${exercise.name}.`]);
+      }, 1000);
 
-      await exerciseManager.startSession();
+      setTimeout(() => {
+        setMessages(prev => [...prev, 'Can you see your hand in the camera view?']);
+      }, 3000);
 
-      setTimeout(async () => {
-        console.log('Starting VoiceManager...');
-        await voiceManager.startConversation();
-      }, 1500);
+      setTimeout(() => {
+        setMessages(prev => [...prev, 'Perfect! Let\'s begin the exercise.']);
+      }, 5000);
+
+      setTimeout(() => {
+        console.log('👋 Simulating hand detection...');
+        exerciseManager.simulateHandDetection();
+        setMessages(prev => [...prev, 'Great! I can see your hand. Keep your fingers spread wide.']);
+      }, 7000);
+
+      setTimeout(() => {
+        setMessages(prev => [...prev, 'Make sure your fingers are fully extended like a fan.']);
+      }, 9000);
+
+      setTimeout(() => {
+        setMessages(prev => [...prev, 'Keep your wrist straight and relaxed.']);
+      }, 11000);
+
+      setTimeout(() => {
+        setMessages(prev => [...prev, 'Excellent form! You\'re doing great! 💪']);
+      }, 13000);
     };
 
-    startManagers();
+    startExercise();
 
+    // Update hand pose points
     const interval = setInterval(() => {
       setHandPosePoints(exerciseManager.getHandPosePoints());
     }, 100);
@@ -63,54 +80,41 @@ export const ExerciseView: React.FC = () => {
     return () => {
       clearInterval(interval);
       exerciseManager.stopSession();
-      voiceManager.stopConversation();
       deactivateKeepAwake();
     };
   }, []);
 
   const handleCompleteExercise = () => {
-    setShowReport(true);
     navigation.navigate('ExerciseReport', { exercise });
   };
 
-  if (hasPermission === null) {
-    return (
-      <View style={styles.container}>
-        <Text style={styles.statusText}>Requesting camera permission...</Text>
-      </View>
-    );
-  }
-
-  if (hasPermission === false) {
-    return (
-      <View style={styles.container}>
-        <Text style={styles.statusText}>No access to camera</Text>
-        <Text style={styles.statusSubtext}>Please enable camera permissions in Settings</Text>
-      </View>
-    );
-  }
-
   return (
     <View style={styles.container}>
-      <CameraView
-        ref={cameraRef}
-        style={styles.camera}
-        facing="front"
-      />
+      {/* Camera Placeholder */}
+      <View style={styles.cameraPlaceholder}>
+        <Text style={styles.placeholderTitle}>📷 Camera View</Text>
+        <Text style={styles.placeholderText}>
+          Camera is not available in Expo Go demo
+        </Text>
+        <Text style={styles.placeholderSubtext}>
+          Features in full version:
+        </Text>
+        <Text style={styles.featureText}>✅ Real-time camera feed</Text>
+        <Text style={styles.featureText}>✅ Hand pose detection</Text>
+        <Text style={styles.featureText}>✅ Skeleton overlay</Text>
+      </View>
 
-      {handPosePoints.length > 0 && (
-        <HandSkeletonOverlay points={handPosePoints} />
-      )}
-
+      {/* Messages Overlay */}
       <View style={styles.messagesOverlay}>
         <ScrollView style={styles.messagesScroll}>
-          {voiceManager.messages.map((message, index) => (
+          {messages.map((message, index) => (
             <View key={index} style={styles.messageContainer}>
-              <Text style={styles.messageText}>{message.text}</Text>
+              <Text style={styles.messageText}>{message}</Text>
             </View>
           ))}
         </ScrollView>
 
+        {/* Complete Exercise Button */}
         <TouchableOpacity
           style={styles.completeButton}
           onPress={handleCompleteExercise}
@@ -125,39 +129,39 @@ export const ExerciseView: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000000',
+    backgroundColor: '#1a1a1a',
   },
-  camera: {
+  cameraPlaceholder: {
     flex: 1,
-    width: '100%',
-    height: '100%',
-  },
-  statusOverlay: {
-    position: 'absolute',
-    top: 100,
-    left: 0,
-    right: 0,
-    alignItems: 'center',
     justifyContent: 'center',
+    alignItems: 'center',
     padding: 20,
+    backgroundColor: '#2a2a2a',
   },
-  statusText: {
+  placeholderTitle: {
+    fontSize: 32,
+    color: '#FFFFFF',
+    fontWeight: 'bold',
+    marginBottom: 20,
+  },
+  placeholderText: {
     fontSize: 18,
     color: '#FFFFFF',
-    fontWeight: '600',
     textAlign: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
-    padding: 15,
-    borderRadius: 10,
+    marginBottom: 20,
+    lineHeight: 24,
   },
-  statusSubtext: {
-    fontSize: 14,
-    color: '#FFFFFF',
+  placeholderSubtext: {
+    fontSize: 16,
+    color: '#AAAAAA',
     textAlign: 'center',
-    marginTop: 10,
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
-    padding: 10,
-    borderRadius: 10,
+    marginTop: 20,
+    marginBottom: 10,
+  },
+  featureText: {
+    fontSize: 14,
+    color: '#4CAF50',
+    marginVertical: 4,
   },
   messagesOverlay: {
     position: 'absolute',
@@ -171,7 +175,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
   },
   messageContainer: {
-    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
     padding: 15,
     borderRadius: 15,
     marginBottom: 10,

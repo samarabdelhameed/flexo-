@@ -776,11 +776,6 @@
   resolved "https://registry.npmjs.org/@bufbuild/protobuf/-/protobuf-1.10.1.tgz"
   integrity sha512-wJ8ReQbHxsAfXhrf9ixl0aYbZorRuOWpBNzm8pL8ftmSxQx/wnJD5Eg861NwJU/czy2VXFIebCeZnZrI9rktIQ==
 
-"@config-plugins/react-native-webrtc@^14.0.0":
-  version "14.0.0"
-  resolved "https://registry.npmjs.org/@config-plugins/react-native-webrtc/-/react-native-webrtc-14.0.0.tgz"
-  integrity sha512-RUynr1I7WZ4HDi0S1KvWRka3VZpRgGWyE4UPw8V+gvda6o2iv15ACcWo6GsBGJ7OsDoO+Ny/N2L1+MNviqv3LQ==
-
 "@elevenlabs/client@1.7.0":
   version "1.7.0"
   resolved "https://registry.npmjs.org/@elevenlabs/client/-/client-1.7.0.tgz"
@@ -1324,19 +1319,6 @@
   integrity sha512-Q+l57E7w/xxOBFVWzdX5rkAZO7ffyF+rlDzNUYq2SU114+5aTyCq+PK4unaEVDNd4952Af7wteKr3sOgasGuaA==
   dependencies:
     "@bufbuild/protobuf" "^1.10.0"
-
-"@livekit/react-native-expo-plugin@^1.0.2":
-  version "1.0.2"
-  resolved "https://registry.npmjs.org/@livekit/react-native-expo-plugin/-/react-native-expo-plugin-1.0.2.tgz"
-  integrity sha512-Crnht6xAlvbSo677oXFBMzS6I5lCMfCNNyLIs6bQZOwlwempz6tWj4CddRknqCCd/dvAyHCa1HwslqXpvGoSJA==
-
-"@livekit/react-native-webrtc@^144.0.0":
-  version "144.0.0"
-  resolved "https://registry.npmjs.org/@livekit/react-native-webrtc/-/react-native-webrtc-144.0.0.tgz"
-  integrity sha512-G5wAxTpxQcHrEQJchcEXs9COrjpfEwJVOJeadDT8+sX/slB5UrjUQC6JItg295Gqtn20Gv3zMJMmSPASJsXRHA==
-  dependencies:
-    base64-js "1.5.1"
-    debug "4.3.4"
 
 "@livekit/react-native@^2.10.3":
   version "2.10.3"
@@ -2435,13 +2417,6 @@ debug@2.6.9:
   dependencies:
     ms "2.0.0"
 
-debug@4.3.4:
-  version "4.3.4"
-  resolved "https://registry.npmjs.org/debug/-/debug-4.3.4.tgz"
-  integrity sha512-PRWFHuSU3eDtQJPvnNY7Jcket1j0t5OuOsFzPPzsekD52Zl8qUfFIPEiswXqIvHWGVHOgX+7G/vCNNhehwxfkQ==
-  dependencies:
-    ms "2.1.2"
-
 decode-uri-component@^0.2.2:
   version "0.2.2"
   resolved "https://registry.npmjs.org/decode-uri-component/-/decode-uri-component-0.2.2.tgz"
@@ -2736,13 +2711,6 @@ expo-asset@~12.0.13:
     "@expo/image-utils" "^0.8.8"
     expo-constants "~18.0.13"
 
-expo-camera@~17.0.10:
-  version "17.0.10"
-  resolved "https://registry.npmjs.org/expo-camera/-/expo-camera-17.0.10.tgz"
-  integrity sha512-w1RBw83mAGVk4BPPwNrCZyFop0VLiVSRE3c2V9onWbdFwonpRhzmB4drygG8YOUTl1H3wQvALJHyMPTbgsK1Jg==
-  dependencies:
-    invariant "^2.2.4"
-
 expo-constants@~18.0.13:
   version "18.0.13"
   resolved "https://registry.npmjs.org/expo-constants/-/expo-constants-18.0.13.tgz"
@@ -2750,13 +2718,6 @@ expo-constants@~18.0.13:
   dependencies:
     "@expo/config" "~12.0.13"
     "@expo/env" "~2.0.8"
-
-expo-device@~8.0.10:
-  version "8.0.10"
-  resolved "https://registry.npmjs.org/expo-device/-/expo-device-8.0.10.tgz"
-  integrity sha512-jd5BxjaF7382JkDMaC+P04aXXknB2UhWaVx5WiQKA05ugm/8GH5uaz9P9ckWdMKZGQVVEOC8MHaUADoT26KmFA==
-  dependencies:
-    ua-parser-js "^0.7.33"
 
 expo-file-system@~19.0.22:
   version "19.0.22"
@@ -2779,11 +2740,6 @@ expo-keep-awake@~15.0.8:
   version "15.0.8"
   resolved "https://registry.npmjs.org/expo-keep-awake/-/expo-keep-awake-15.0.8.tgz"
   integrity sha512-YK9M1VrnoH1vLJiQzChZgzDvVimVoriibiDIFLbQMpjYBnvyfUeHJcin/Gx1a+XgupNXy92EQJLgI/9ZuXajYQ==
-
-expo-linear-gradient@~15.0.8:
-  version "15.0.8"
-  resolved "https://registry.npmjs.org/expo-linear-gradient/-/expo-linear-gradient-15.0.8.tgz"
-  integrity sha512-V2d8Wjn0VzhPHO+rrSBtcl+Fo+jUUccdlmQ6OoL9/XQB7Qk3d9lYrqKDJyccwDxmQT10JdST3Tmf2K52NLc3kw==
 
 expo-modules-autolinking@3.0.25:
   version "3.0.25"
@@ -2821,14 +2777,6 @@ expo-status-bar@~3.0.9:
   integrity sha512-xyYyVg6V1/SSOZWh4Ni3U129XHCnFHBTcUo0dhWtFDrZbNp/duw5AGsQfb2sVeU0gxWHXSY1+5F0jnKYC7WuOw==
   dependencies:
     react-native-is-edge-to-edge "^1.2.1"
-
-expo-system-ui@~6.0.9:
-  version "6.0.9"
-  resolved "https://registry.npmjs.org/expo-system-ui/-/expo-system-ui-6.0.9.tgz"
-  integrity sha512-eQTYGzw1V4RYiYHL9xDLYID3Wsec2aZS+ypEssmF64D38aDrqbDgz1a2MSlHLQp2jHXSs3FvojhZ9FVela1Zcg==
-  dependencies:
-    "@react-native/normalize-colors" "0.81.5"
-    debug "^4.3.2"
 
 expo@~54.0.0:
   version "54.0.34"
@@ -4291,11 +4239,6 @@ ms@2.0.0:
   resolved "https://registry.npmjs.org/ms/-/ms-2.0.0.tgz"
   integrity sha512-Tpp60P6IUJDTuOq/5Z8cdskzJujfwqfOTkrwIwj7IRISpnkJnT6SyJ4PCPnGMoFjC9ddhal5KVIYtAt97ix05A==
 
-ms@2.1.2:
-  version "2.1.2"
-  resolved "https://registry.npmjs.org/ms/-/ms-2.1.2.tgz"
-  integrity sha512-sGkPx+VjMtmA6MX27oA4FBFELFCZZ4S4XqeGOXCv68tT+jb3vk/RyaKWP0PTKyWtmLSM0b+adUTEvbs1PEaH2w==
-
 mz@^2.7.0:
   version "2.7.0"
   resolved "https://registry.npmjs.org/mz/-/mz-2.7.0.tgz"
@@ -4716,16 +4659,6 @@ react-native-is-edge-to-edge@^1.2.1:
   version "1.3.1"
   resolved "https://registry.npmjs.org/react-native-is-edge-to-edge/-/react-native-is-edge-to-edge-1.3.1.tgz"
   integrity sha512-NIXU/iT5+ORyCc7p0z2nnlkouYKX425vuU1OEm6bMMtWWR9yvb+Xg5AZmImTKoF9abxCPqrKC3rOZsKzUYgYZA==
-
-react-native-nitro-image@^0.14.0:
-  version "0.14.0"
-  resolved "https://registry.npmjs.org/react-native-nitro-image/-/react-native-nitro-image-0.14.0.tgz"
-  integrity sha512-yLBm+SC/bdssO5XJhYOxVf6UeFfcUoRLwR1YXPJpNZyv65aHPijDg/nklJ/spAonWEl4yfPpATGSqo8mvVEjlQ==
-
-react-native-nitro-modules@^0.35.6:
-  version "0.35.6"
-  resolved "https://registry.npmjs.org/react-native-nitro-modules/-/react-native-nitro-modules-0.35.6.tgz"
-  integrity sha512-3Cb7s+O5tpZ6RdIiPOB/wi3IMfBxD6tl6VDF8gJ5zvM/BEGTWxwMMLjzmWmsYPKekdbYBznF6qp2d2SxixPy8g==
 
 react-native-safe-area-context@~5.6.2:
   version "5.6.2"
@@ -5529,11 +5462,6 @@ typescript@~5.9.2:
   version "5.9.3"
   resolved "https://registry.npmjs.org/typescript/-/typescript-5.9.3.tgz"
   integrity sha512-jl1vZzPDinLr9eUt3J/t7V6FgNEw9QjvBPdysz9KfQDD41fQrC2Y4vKQdiaUpFT4bXlb1RHhLpp8wtm6M5TgSw==
-
-ua-parser-js@^0.7.33:
-  version "0.7.41"
-  resolved "https://registry.npmjs.org/ua-parser-js/-/ua-parser-js-0.7.41.tgz"
-  integrity sha512-O3oYyCMPYgNNHuO7Jjk3uacJWZF8loBgwrfd/5LE/HyZ3lUIOdniQ7DNXJcIgZbwioZxk0fLfI4EVnetdiX5jg==
 
 unbox-primitive@^1.1.0:
   version "1.1.0"
